@@ -189,7 +189,7 @@ class CloudwatchWrapper(object):
         :param max_records: Maximum records to be returned. Default is 50.
         :type max_records: int
 
-        :return: List of MetricAlarms.
+        :return: List of MetricAlarms and CompositeAlarms.
         :rtype: list
         """  # noqa
         if alarm_names and alarm_name_prefix:
@@ -208,4 +208,9 @@ class CloudwatchWrapper(object):
         if action_prefix:
             kwargs['ActionPrefix'] = action_prefix
 
-        return self.__client.describe_alarms(**kwargs)['MetricAlarms']
+        response = self.__client.describe_alarms(**kwargs)
+
+        if 'CompositeAlarms' in response:
+            return response['CompositeAlarms']
+        else:
+            return response['MetricAlarms']
